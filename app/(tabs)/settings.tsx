@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import useThemeColor from "../hooks/useThemeColor";
+import { useThemeColor } from "../hooks/useThemeColor";
 
 // TODO: Y a tout à faire, force les mecs on est carrément pas ensemble
 

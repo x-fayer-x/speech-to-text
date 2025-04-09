@@ -1,4 +1,3 @@
-import useThemeColor from "@/app/hooks/useThemeColor";
 import React, { useEffect, useState, useRef } from "react";
 import { View, Button, Pressable, StyleSheet , FlatList, SafeAreaView} from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -7,6 +6,8 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import * as FileSystem from "expo-file-system";
 import { Audio } from "expo-av";
+
+import { useThemeColor } from "@/app/hooks/useThemeColor";
 
 // États locaux :
 

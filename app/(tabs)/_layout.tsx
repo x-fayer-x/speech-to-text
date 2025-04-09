@@ -45,12 +45,20 @@ function TabLayout() {
         }),
       }}
     >
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Home"
         component={login}
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <MaterialIcons size={28} name="home" color={color} />,
+        }}
+      /> */}
+      <Tab.Screen
+        name="Record"
+        component={index}
+        options={{
+          title: 'Record',
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="mic" color={color} />,
         }}
       />
       <Tab.Screen
@@ -61,34 +69,25 @@ function TabLayout() {
           tabBarIcon: ({ color }) => <MaterialIcons size={28} name="description" color={color} />,
         }}
       />
+      
       <Tab.Screen
-        name="Record"
-        component={index}
-        options={{
-          title: 'Record',
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="mic" color={color} />,
-        }}
-      />
-      {/* <Tab.Screen
         name="Settings"
         component={settings}
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => <MaterialIcons size={28} name="settings" color={color} />,
         }}
-      /> */}
+      />
     </Tab.Navigator>
   );
 }
 
 export default function App() {
   return (
-    
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={login} />
         <Stack.Screen name="Register" component={register} />
         <Stack.Screen name="Main" component={TabLayout} />
       </Stack.Navigator>
-    
   );
 }

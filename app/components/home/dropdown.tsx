@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
-import useThemeColor from "@/app/hooks/useThemeColor";
+import { useThemeColor } from "@/app/hooks/useThemeColor";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 

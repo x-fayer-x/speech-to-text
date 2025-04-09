@@ -9,12 +9,40 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   // const navigation = useNavigation();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Handle login logic here
     if (id && password) {
       Alert.alert('Login Successful', `Welcome back, ${id}!`);
     } else {
       Alert.alert('Error', 'Please enter both ID and password.');
+    }
+    // il faut comenter navigation.navigate('Main'); si je veux tester le fetch et le decommanter pour acceder a mon record description
+    // navigation.navigate('Main');
+    try {
+      // Envoyer les données au backend
+      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: id,
+          password: password,
+        }),
+      });
+  
+      // Vérifier la réponse du backend
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert('Login Successful', `Welcome back, ${id}!`);
+        navigation.navigate('Main'); // Naviguer vers TabLayout
+      } else {
+        Alert.alert('Login Failed', data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', 'An error occurred. Please try again.');
     }
   };
 

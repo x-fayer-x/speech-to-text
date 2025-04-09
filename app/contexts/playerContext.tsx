@@ -52,9 +52,9 @@ export function PlayerProvider({ children }: any) {
     const loadRecordings = async () => {
         try {
             const files = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}recordings/`);
-            console.log("playercontext l40 tout mes record ", FileSystem.documentDirectory)
+            console.log("playercontext l55 tout mes record ", FileSystem.documentDirectory)
             setRecordings(files.filter(file => file.endsWith('.m4a')));
-            console.log("playercontext l40 tout mes record ", recordings);
+            console.log("playercontext l57 tout mes record ", recordings);
         } catch (error) {
             console.log("playerContext l45 Error reading directory:", error);
         }

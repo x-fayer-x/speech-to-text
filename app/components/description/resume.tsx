@@ -4,7 +4,7 @@ import { FlatList, ScrollView } from "react-native-gesture-handler";
 
 import * as FileSystem from "expo-file-system";
 
-import useThemeColor from "@/app/hooks/useThemeColor";
+import { useThemeColor } from "@/app/hooks/useThemeColor";
 import Player from "./player";
 import usePlayer from "@/app/contexts/playerContext";
 
@@ -115,7 +115,7 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
 
     const handlePress = () => {
         itemState < 1 ? setItemState(itemState + 1) : setItemState(0); // a l'origine il etait a inferieur à 2
-        console.log("Pressed on", item, "state : ", itemState);
+        console.log("resume.tsx l.118 Pressed on", item, "state : ", itemState);
     };
 
     const deleteRecording = async (uri: string) => {
@@ -137,6 +137,7 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
                     <View style={{ height: '85%', width: '100%', marginTop: 10 }}>
                         <ScrollView style={{ width: '100%' }}>
                             <Text style={styles.text}>
+                                
                                 {jsonContent[index] ? jsonContent[index].Transcription : "Loading..."}
                             </Text>
                         </ScrollView>
@@ -146,6 +147,7 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
         </Animated.View>
     );
 }
+// changer le jsonContent[index] ? jsonContent[index].Transcription en item.transcription mais ca ne met pas a jour instant mes record.
 
 // {itemState > 1 &&
 //     <>
