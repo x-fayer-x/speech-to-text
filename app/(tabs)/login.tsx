@@ -17,7 +17,7 @@ const LoginPage = () => {
       Alert.alert('Error', 'Please enter both ID and password.');
     }
     // il faut comenter navigation.navigate('Main'); si je veux tester le fetch et le decommanter pour acceder a mon record description
-    // navigation.navigate('Main');
+    navigation.navigate('Main');
     try {
       // Envoyer les données au backend
       const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/api/login', {

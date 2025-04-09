@@ -32,13 +32,14 @@ const RegistrationPage = () => {
               ConfirmPassword: ConfirmPassword,
             }),
           });
-      
+          // utiliser JSON.parse() si jai des probleme avec la reponse du serveur
           // Vérifier la réponse du backend
           const data = await response.json();
+          console.log('Raw response from server:', data);
       
           if (response.ok) {
             Alert.alert('register Successful', `Welcome back, ${username}!`);
-            navigation.navigate('Register'); // Naviguer vers TabLayout
+            navigation.navigate('Login'); // Naviguer vers TabLayout
           } else {
             Alert.alert('register Failed', data.message || 'Invalid inputs');
           }
@@ -64,7 +65,7 @@ const RegistrationPage = () => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        value={username}
+        value={Email}
         onChangeText={setEmail}
       />
       <TextInput
@@ -77,7 +78,7 @@ const RegistrationPage = () => {
       <TextInput
         style={styles.input}
         placeholder="Confirm Password"
-        value={password}
+        value={ConfirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
       />
