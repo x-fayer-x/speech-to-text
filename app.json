@@ -8,6 +8,9 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "permissions": [
+      "AUDIO_RECORDING"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -15,7 +18,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fayer.speech_to_text"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +40,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a0bdd43c-b1d8-4aaa-9143-abbb22120a00"
+      }
     }
   }
 }

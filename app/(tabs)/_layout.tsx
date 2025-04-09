@@ -1,45 +1,94 @@
-import { Tabs } from 'expo-router';
+// TEST PAGE LOGIN ET REGISTER AVEC NAVIGATION
+
+//----------------------------------------------------------------------------------------------------------
 import React from 'react';
 import { Platform } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { RootStackParamList } from '../types/navigation'; // Import du type RootStackParamList
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import useThemeColor from '../hooks/useThemeColor';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+// Importez vos écrans
+// import HomeScreen from '../screens/HomeScreen';
+import description from './description';
+import index from './index';
+import settings from './settings';
+import register from './register';
+import login from './login';
 
+// const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
+
+function TabLayout() {
   return (
-    <Tabs
+    <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
+        tabBarActiveTintColor: useThemeColor({}, 'tint'),
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
-          default: {},
+          default: {
+            backgroundColor: useThemeColor({}, 'tabIconDefault'),
+            position: 'absolute',
+            borderRadius: 50,
+            borderTopWidth: 0,
+            width: '80%',
+            marginLeft: '10%',
+            marginBottom: 15,
+          },
         }),
-      }}>
-      <Tabs.Screen
-        name="index"
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={login}
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="home" color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="explore"
+      <Tab.Screen
+        name="Description"
+        component={description}
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Description',
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="description" color={color} />,
         }}
       />
-    </Tabs>
+      <Tab.Screen
+        name="Record"
+        component={index}
+        options={{
+          title: 'Record',
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="mic" color={color} />,
+        }}
+      />
+      {/* <Tab.Screen
+        name="Settings"
+        component={settings}
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="settings" color={color} />,
+        }}
+      /> */}
+    </Tab.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={login} />
+        <Stack.Screen name="Register" component={register} />
+        <Stack.Screen name="Main" component={TabLayout} />
+      </Stack.Navigator>
+    
   );
 }
