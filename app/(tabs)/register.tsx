@@ -3,6 +3,7 @@ import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/navigation'; // Import du type RootStackParamList
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegistrationPage = () => {
   const [username, setUsername] = useState('');
@@ -10,49 +11,69 @@ const RegistrationPage = () => {
   const [Email, setEmail] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
   
-  type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
+  type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
   const navigation = useNavigation<RegisterScreenNavigationProp>();
-
-  // Fonction pour gérer l'enregistrement
-  const handleRegistration = async () => {
-    // Handle registration logic here
-    console.log('Registered with:', { username, password, Email, ConfirmPassword });
-    // You can add your registration logic here, such as API calls or form validation
-    try {
-          // Envoyer les données au backend
-          const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/api/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: username,
-              password: password,
-              Email: Email,
-              ConfirmPassword: ConfirmPassword,
-            }),
-          });
-          // utiliser JSON.parse() si jai des probleme avec la reponse du serveur
-          // Vérifier la réponse du backend
-          const data = await response.json();
-          console.log('Raw response from server:', data);
-      
-          if (response.ok) {
-            Alert.alert('register Successful', `Welcome back, ${username}!`);
-            navigation.navigate('Login'); // Naviguer vers TabLayout
-          } else {
-            Alert.alert('register Failed', data.message || 'Invalid inputs');
-          }
-        } catch (error) {
-          console.error('register error:', error);
-          Alert.alert('Error', 'An error occurred. Please try again.');
-        }
-      };
 
   // Navigation vers la page de connexion
   const navigateToLogin = () => {
     navigation.navigate('Login'); // Naviguer vers l'écran Login
   };
+
+  // Fonction pour gérer l'enregistrement
+  const handleRegistration = async () => {
+    if (!username || !Email || !password || !ConfirmPassword) {
+      console.log('Error', 'Please fill in all fields.');
+      return;
+    }
+
+    if (password !== ConfirmPassword) {
+      console.log('Error', 'Passwords do not match.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Username: username,
+          Password: password,
+          Email: Email,
+          Confirmation: ConfirmPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // pour lire la response en brut si j'ai besoin de debugg
+      // const textResponse = await response.text();
+      // console.log('Raw response from server:', textResponse);
+
+      const data = await response.json();
+      console.log('Response from server:', data);
+
+      if (data.Token) {
+        await AsyncStorage.setItem('session_token', data.Token);
+        console.log('Token stored successfully');
+      }
+
+      if (response.ok) {
+        Alert.alert('Register Successful', `Welcome, ${username}!`);
+        navigation.navigate('Login'); // Naviguer vers la page Login
+      } else {
+        Alert.alert('Register Failed', data.message || 'Invalid inputs');
+      }
+    } catch (error) {
+      console.error('Register error:', error);
+      Alert.alert('Error', 'An error occurred. Please try again.');
+    }
+  };
+
+  
 
   return (
     <View style={styles.container}>

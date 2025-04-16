@@ -29,8 +29,18 @@ import usePlayer from "@/app/contexts/playerContext";
 
 // Si il y a une liste assez longue de transcriptions, certaines transcriptions peuvent ne pas se dérouler. Il faut scroll de nouveau pour faire en sorte que ça refonctionne.
 // La font ne s'affiche pas correctement tout le temps.
+// interface ResumeProps {
+//     item: string;
+//     index: number;
+//     scrollRef: React.RefObject<any>;
+// }
+
 interface ResumeProps {
-    item: string;
+    item: {
+      audioUri: string;
+      transcription: string;
+      summary: string;
+    };
     index: number;
     scrollRef: React.RefObject<any>;
 }

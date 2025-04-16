@@ -1,11 +1,21 @@
-import { Text, View } from "react-native";
+import { Text, View, Button, Alert } from "react-native";
 import { useThemeColor } from "../hooks/useThemeColor";
-
-// TODO: Y a tout à faire, force les mecs on est carrément pas ensemble
-
-// Nan en vrai ce qui serait cool ce serait de pouvoir changer le thème de l'appli. (Voir contants/Colors.ts et hooks/useThemeColor.ts pour voir comment c'est géré)
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../types/navigation'; // Import du type RootStackParamList
 
 export default function Settings() {
+
+  type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+    const navigation = useNavigation<LoginScreenNavigationProp>();
+    // console.log('Navigation object:', navigation);
+
+  const handleLogout = () => {
+    // Logique de déconnexion (par exemple, réinitialiser les états globaux ou supprimer les tokens)
+    Alert.alert("Logged Out", "You have been logged out successfully.");
+    navigation.navigate("Login"); // Rediriger vers la page Login
+  };
+
   return (
     <View
       style={{
@@ -16,6 +26,7 @@ export default function Settings() {
       }}
     >
       <Text>Settings page</Text>
+      <Button title="Log Out" onPress={handleLogout} />
     </View>
   );
 }

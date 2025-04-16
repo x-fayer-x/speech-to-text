@@ -9,22 +9,11 @@ import loadRecordings from '../contexts/playerContext';
 
 
 export default function Description() {
-  // const [record, setRecordings] = useState<string[]>([]);
-
-  const { recordings, loadRecordings } = usePlayer();
-
+  const { recordings, loadRecordings } = usePlayer(); // Récupérer recordings et loadRecordings depuis le contexte
   const [jsonContents, setJsonContents] = useState<any[]>([]);
   const scrollRef = useRef<FlatList>(null);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const files = await FileSystem.readDirectoryAsync('file:///data/user/0/com.fayer.speech_to_text/files/recordings/');
-  //     setRecordings(files);
-  //   })();
-  // }, []);
-
   useEffect(() => {
-    console.log("description.tsx JSON CONTEXT  JABVAJVAHVJHSVAJHVHJAVJHA",jsonContents)
     const readJsonFiles = async () => {
       try {
         if (!FileSystem.documentDirectory) {
@@ -33,24 +22,17 @@ export default function Description() {
         }
 
         const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-        console.log('description.tsx l32 Files in directory:', files);
-
         const jsonFiles = files.filter(file => file.endsWith('.json'));
-        console.log('description.tsx JSON files:', jsonFiles); 
 
         const jsonContents = await Promise.all(jsonFiles.map(async (file) => {
           const fileUri = `${FileSystem.documentDirectory}${file}`;
           const json = await FileSystem.readAsStringAsync(fileUri, {
             encoding: FileSystem.EncodingType.UTF8,
           });
-
-          console.log('description.tsx Read JSON file:', file, json);
           return JSON.parse(json);
         }));
 
         setJsonContents(jsonContents);
-
-        console.log('description.tsx JSON contents:', jsonContents);
       } catch (error) {
         console.error('Error reading JSON files:', error);
       }
@@ -62,6 +44,7 @@ export default function Description() {
   useEffect(() => {
     loadRecordings();
   }, []);
+
 
   const deleteAllFiles = async () => {
     try {
@@ -87,6 +70,16 @@ export default function Description() {
     }
   };
 
+  // Combiner recordings et jsonContents
+  const combinedData = [
+    ...recordings.map((file) => ({
+      audioUri: `${FileSystem.documentDirectory}recordings/${file}`,
+      transcription: "",
+      summary: "",
+    })),
+    ...jsonContents,
+  ];
+
   return (
     <GestureHandlerRootView>
       <View style={{ backgroundColor: useThemeColor({}, "background"), flex: 1 }}>
@@ -94,21 +87,17 @@ export default function Description() {
           style={{
             flex: 1,
             justifyContent: "center",
-            alignItems: "center", // Centrer horizontalement
-            paddingVertical: 30, // Ajouter de l'espace en haut et en bas
+            alignItems: "center",
+            paddingVertical: 30,
           }}
-
         >
-          {/* a supprimer quand je nest pas besoin de supprimer mes fichiers */}
-
-          <Button title="Delete All Files" onPress={deleteAllFiles} /> 
+          <Button title="Delete All Files" onPress={deleteAllFiles} />
           <FlatList
             ref={scrollRef}
-            data={recordings} // quand je modifie avce jsonCOntent ca me modifie le contenus de mon print resume pourquoi 
-            // (mais sa sauvegarde mes contenus de resume?
-            keyExtractor={(item) => item}
+            data={combinedData} // Utilisation de combinedData
+            keyExtractor={(item, index) => index.toString()} // Utilisation de l'index comme clé
             renderItem={({ item, index }) => (
-              <Resume item={item} index={index} scrollRef={scrollRef} /> // Utilisez le composant Resume
+              <Resume item={item} index={index} scrollRef={scrollRef} /> // Passez l'objet complet à Resume
             )}
           />
         </SafeAreaView>
@@ -128,3 +117,21 @@ const styles = StyleSheet.create({
     color: 'white', // Couleur par défaut, sera remplacée par textColor
   },
 });
+
+
+//ANCIENNE FLATLIST POUR AFFICHER LES TRANDCRIPTION/RESUMER
+{/* <Button title="Delete All Files" onPress={deleteAllFiles} /> 
+          <FlatList
+            ref={scrollRef}
+            data={recordings} // quand je modifie avce jsonCOntent ca me modifie le contenus de mon print resume pourquoi 
+            // (mais sa sauvegarde mes contenus de resume?
+            keyExtractor={(item) => item}
+            renderItem={({ item, index }) => (
+              <Resume item={item} index={index} scrollRef={scrollRef} /> // Utilisez le composant Resume
+            )}
+          />
+        </SafeAreaView>
+      </View>
+    </GestureHandlerRootView>
+  );
+} */}
