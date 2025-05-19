@@ -14,7 +14,7 @@ import { useThemeColor } from "../hooks/useThemeColor";
 // Affiche un composant Dropdown pour sélectionner la langue de la transcription.
 // Affiche un composant Recorder pour enregistrer un message audio.
 
-export default function Index() {
+export default function Record() {
   return (
     <View
       style={{

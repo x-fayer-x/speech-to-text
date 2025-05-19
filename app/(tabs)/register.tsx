@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types/navigation'; // Import du type RootStackParamList
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RootStackParamList } from '../types/_navigation'; // Import du type RootStackParamList
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegistrationPage = () => {
   const [username, setUsername] = useState('');
@@ -23,6 +23,7 @@ const RegistrationPage = () => {
   const handleRegistration = async () => {
     if (!username || !Email || !password || !ConfirmPassword) {
       console.log('Error', 'Please fill in all fields.');
+      Alert.alert('Please fill in all fields.');
       return;
     }
 
@@ -45,9 +46,9 @@ const RegistrationPage = () => {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
       
       // pour lire la response en brut si j'ai besoin de debugg
       // const textResponse = await response.text();
@@ -56,10 +57,10 @@ const RegistrationPage = () => {
       const data = await response.json();
       console.log('Response from server:', data);
 
-      if (data.Token) {
-        await AsyncStorage.setItem('session_token', data.Token);
-        console.log('Token stored successfully');
-      }
+      // if (data.Token) {
+      //   await AsyncStorage.setItem('session_token', data.Token);
+      //   console.log('Token stored successfully');
+      // }
 
       if (response.ok) {
         Alert.alert('Register Successful', `Welcome, ${username}!`);

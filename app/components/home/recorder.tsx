@@ -15,20 +15,20 @@ export default function Recorder() {
     // }
 
     const [recording, setRecording] = useState<Audio.Recording | null>(null);
-    const [savedRecordings, setSavedRecordings] = useState<string[]>([]);
+    // const [savedRecordings, setSavedRecordings] = useState<string[]>([]);
 
     const [isRecording, setIsRecording] = useState(false);
     const { sendRecording, loadRecordings } = usePlayer();
 
-    useEffect(() => {
-        const fetchRecordings = async () => {
-            const dir = `${FileSystem.documentDirectory}recordings/`;
-            const files = await FileSystem.readDirectoryAsync(dir);
-            setSavedRecordings(files);
-        };
+    // useEffect(() => {
+    //     const fetchRecordings = async () => {
+    //         const dir = `${FileSystem.documentDirectory}recordings/`;
+    //         const files = await FileSystem.readDirectoryAsync(dir);
+    //         setSavedRecordings(files);
+    //     };
 
-        fetchRecordings();
-    }, []);
+    //     fetchRecordings();
+    // }, []);
 
     const createDirectory = async () => {
         const dir = `${FileSystem.documentDirectory}recordings/`;
@@ -44,6 +44,7 @@ export default function Recorder() {
         return dir;
     };
 
+    // fonction pour demmarer l'enregistrement ou l'arreter
     const toggleRecording = async () => {
         if (isRecording) {
             console.log("Stopping recording..");
@@ -57,7 +58,7 @@ export default function Recorder() {
                 return;
             }
 
-            const newUri = `${dir}recording-${Date.now()}.m4a`;
+            const newUri = `${dir}${Date.now()}.m4a`;
             await FileSystem.moveAsync({
                 from: uri,
                 to: newUri,
@@ -68,6 +69,10 @@ export default function Recorder() {
             // Convert the recording to base64
             if (newUri && sendRecording) {
                 sendRecording(newUri);
+
+                // Supprimer le fichier local après l'envoi
+                // await FileSystem.deleteAsync(newUri);
+                // console.log("Local recording deleted after upload");
             }
 
             loadRecordings();

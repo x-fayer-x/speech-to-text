@@ -53,7 +53,7 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
 
     const { loadRecordings, jsonContent } = usePlayer();
 
-    useEffect(() => {
+        useEffect(() => {
         const timeoutId = setTimeout(() => {
             scrollRef.current?.scrollToIndex({ animated: true, index });
             return () => clearTimeout(timeoutId);
@@ -142,18 +142,25 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
             <TouchableOpacity onPress={handlePress}>
                 <Text style={styles.title}>RESUME {index + 1}</Text>
             </TouchableOpacity>
-            {itemState > 0 &&
-                <>
-                    <View style={{ height: '85%', width: '100%', marginTop: 10 }}>
-                        <ScrollView style={{ width: '100%' }}>
-                            <Text style={styles.text}>
-                                
-                                {jsonContent[index] ? jsonContent[index].Transcription : "Loading..."}
-                            </Text>
-                        </ScrollView>
-                    </View>
-                </>
-            }
+            {itemState > 0 && (
+                <View style={{ height: '85%', width: '100%', marginTop: 10 }}>
+                    <ScrollView style={{ width: '100%' }}>
+                    <Text style={styles.text}>
+                        {item.transcription?.trim().length > 0
+                            ? item.transcription
+                            : "Loading transcription..."}
+                    </Text>
+                    <Text style={styles.text}>
+                        {item.summary?.trim().length > 0 && item.summary !== "Le resumer a échouer"
+                            ? item.summary
+                            : "Résumé indisponible."}
+                    </Text>
+
+
+
+                    </ScrollView>
+                </View>
+            )}
         </Animated.View>
     );
 }
@@ -164,4 +171,26 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
 //         <Player item={item} />
 //         {/* <Button title="Delete" onPress={() => deleteRecording(`${FileSystem.documentDirectory}${item}`)} /> */}
 //     </>
+// }
+
+// ancienne version
+// return (
+//     <Animated.View style={[styles.container, { height: heightAnim, minWidth: minWidthAnim, maxWidth: minWidthAnim }]}>
+//         <TouchableOpacity onPress={handlePress}>
+//             <Text style={styles.title}>RESUME {index + 1}</Text>
+//         </TouchableOpacity>
+//         {itemState > 0 &&
+//             <>
+//                 <View style={{ height: '85%', width: '100%', marginTop: 10 }}>
+//                     <ScrollView style={{ width: '100%' }}>
+//                         <Text style={styles.text}>
+                            
+//                             {jsonContent[index] ? jsonContent[index].Transcription : "Loading..."}
+//                         </Text>
+//                     </ScrollView>
+//                 </View>
+//             </>
+//         }
+//     </Animated.View>
+// );
 // }

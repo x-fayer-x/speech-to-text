@@ -9,7 +9,8 @@ import loadRecordings from '../contexts/playerContext';
 
 
 export default function Description() {
-  const { recordings, loadRecordings } = usePlayer(); // Récupérer recordings et loadRecordings depuis le contexte
+  const { jsonContent,recordings, loadRecordings } = usePlayer(); // Récupérer recordings et loadRecordings depuis le contexte
+  // const { jsonContent } = usePlayer(); 
   const [jsonContents, setJsonContents] = useState<any[]>([]);
   const scrollRef = useRef<FlatList>(null);
 
@@ -20,24 +21,35 @@ export default function Description() {
           console.error("FileSystem.documentDirectory is null");
           return;
         }
-
+  
+        // Lire tous les fichiers dans le répertoire
         const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+  
+        // Filtrer uniquement les fichiers JSON
         const jsonFiles = files.filter(file => file.endsWith('.json'));
-
-        const jsonContents = await Promise.all(jsonFiles.map(async (file) => {
-          const fileUri = `${FileSystem.documentDirectory}${file}`;
-          const json = await FileSystem.readAsStringAsync(fileUri, {
-            encoding: FileSystem.EncodingType.UTF8,
-          });
-          return JSON.parse(json);
-        }));
-
-        setJsonContents(jsonContents);
+  
+        // Lire et parser le contenu des fichiers JSON
+        const parsedJsonContents = await Promise.all(
+          jsonFiles.map(async (file) => {
+            const fileUri = `${FileSystem.documentDirectory}${file}`;
+            const json = await FileSystem.readAsStringAsync(fileUri, {
+              encoding: FileSystem.EncodingType.UTF8,
+            });
+            return JSON.parse(json);
+          })
+        );
+  
+        // Mettre à jour l'état avec les nouvelles données
+        setJsonContents(prevJsonContents => {
+          const updatedContent = [...prevJsonContents, ...parsedJsonContents];
+          console.log("DESCIPTION l44 Updated jsonContent:", updatedContent);
+          return updatedContent;
+        });
       } catch (error) {
         console.error('Error reading JSON files:', error);
       }
     };
-
+  
     readJsonFiles();
   }, [recordings]);
 
@@ -71,14 +83,14 @@ export default function Description() {
   };
 
   // Combiner recordings et jsonContents
-  const combinedData = [
-    ...recordings.map((file) => ({
-      audioUri: `${FileSystem.documentDirectory}recordings/${file}`,
-      transcription: "",
-      summary: "",
-    })),
-    ...jsonContents,
-  ];
+  // const combinedData = [
+  //   ...recordings.map((file) => ({
+  //     audioUri: `${FileSystem.documentDirectory}recordings/${file}`,
+  //     transcription: "",
+  //     summary: "",
+  //   })),
+  //   ...jsonContents,
+  // ];
 
   return (
     <GestureHandlerRootView>
@@ -92,13 +104,14 @@ export default function Description() {
           }}
         >
           <Button title="Delete All Files" onPress={deleteAllFiles} />
-          <FlatList
-            ref={scrollRef}
-            data={combinedData} // Utilisation de combinedData
-            keyExtractor={(item, index) => index.toString()} // Utilisation de l'index comme clé
-            renderItem={({ item, index }) => (
-              <Resume item={item} index={index} scrollRef={scrollRef} /> // Passez l'objet complet à Resume
-            )}
+            <FlatList
+              ref={scrollRef}
+              data={jsonContent} // Utilisation de jsonContent
+              keyExtractor={(item, index) => index.toString()} // Utilisation de l'index comme clé
+              renderItem={({ item, index }) => {
+                  console.log("Data passed to Resume:", item);
+                  return <Resume item={item} index={index} scrollRef={scrollRef} />;
+              }}
           />
         </SafeAreaView>
       </View>

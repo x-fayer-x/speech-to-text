@@ -17,6 +17,7 @@ interface RecordingData {
   summary: string; // Résumé de l'audio
 }
 interface PlayerContextProps {
+    loadAllData: () => void;
     recordings: string[];
     sendRecording?: (uri: string) => void;
     deleteRecording?: (uri: string) => void;
@@ -27,6 +28,7 @@ interface PlayerContextProps {
 
 const PlayerContext = createContext<PlayerContextProps>({
     recordings: [],
+    loadAllData : () => { },
     loadRecordings: () => { },
     deleteRecording: () => { },
     sendRecording: () => { },
@@ -50,8 +52,27 @@ export function PlayerProvider({ children }: any) {
     // }, []);
 
     useEffect(() => {
-        loadRecordings();
+        // loadRecordings();
+        loadAllData();
     }, []);
+
+    useEffect(() => {
+        console.log("Updated jsonContent:", jsonContent);
+    }, [jsonContent]);
+
+    const loadAllData = async () => {
+        try {
+            const localData = await loadLocalJsonFiles(); // Charger les fichiers locaux
+            const backendData = await loadRecordings(); // Charger les données depuis le backend
+
+            // Fusionner les données locales et distantes
+            const mergedData = [...localData, ...backendData];
+            console.log("playercontext Merged data:", mergedData);
+            setJsonContent(mergedData);
+        } catch (error) {
+            console.error("Error loading data:", error);
+        }
+    };
 
 
     const loadRecordings = async () => {
@@ -79,18 +100,26 @@ export function PlayerProvider({ children }: any) {
       
           // Mettre à jour l'état avec les données du backend
           setJsonContent(serverData);
+          return serverData;
         } catch (error) {
           console.error('Error loading recordings:', error);
+            return [];
         }
       };
 
-    const saveJsonToFile = async (json: any) => {
-        const fileUri = `${FileSystem.documentDirectory}response.json-${Date.now()}.json`;
-        console.log("playerContext l46 JSON saved to", fileUri);
+      const saveJsonToFile = async (json: any) => {
+        const directory = FileSystem.documentDirectory;
+        if (!directory) {
+            console.error("FileSystem.documentDirectory is null");
+            return null;
+        }
+    
+        const fileUri = `${directory}response.json-${Date.now()}.json`;
+        console.log("Saving JSON to", fileUri);
         await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(json), {
             encoding: FileSystem.EncodingType.UTF8,
         });
-        console.log("playerContext l50 JSON saved to", fileUri);
+        console.log("JSON saved to", fileUri);
         return fileUri;
     };
 
@@ -110,9 +139,17 @@ export function PlayerProvider({ children }: any) {
             const json = await response.json();
             console.log("playerContext mon json :", json);
 
-            const jsonFileUri = await saveJsonToFile(json);
+            const normalizedJson = {
+                audioUri: uri,
+                transcription: json.Transcription ?? json.transcription ?? "",
+                summary: json.Resume ?? json.summary ?? "",
+            };
+
+            const jsonFileUri = await saveJsonToFile(normalizedJson);
+            console.log("playercontext Saved transcription to local file:", jsonFileUri);
+
             // met a jour jsonContent pour relancer le rendu
-            setJsonContent(prevJsonContents => [...prevJsonContents, json]);
+            setJsonContent(prev => [...prev, normalizedJson]);
             setIsLoadingJson(false);
         } catch (err) {
             console.error("Failed to send recording", err);
@@ -137,6 +174,35 @@ export function PlayerProvider({ children }: any) {
         return recordingData;
     }
 
+    const loadLocalJsonFiles = async () => {
+        try {
+            const directory = FileSystem.documentDirectory;
+            if (!directory) {
+                console.error("FileSystem.documentDirectory is null");
+                return [];
+            }
+    
+            const files = await FileSystem.readDirectoryAsync(directory);
+            const jsonFiles = files.filter((file) => file.endsWith('.json'));
+    
+            const localJsonContents = await Promise.all(
+                jsonFiles.map(async (file) => {
+                    const fileUri = `${directory}${file}`;
+                    const content = await FileSystem.readAsStringAsync(fileUri, {
+                        encoding: FileSystem.EncodingType.UTF8,
+                    });
+                    return JSON.parse(content);
+                })
+            );
+    
+            console.log("Loaded local JSON files:", localJsonContents);
+            return localJsonContents;
+        } catch (error) {
+            console.error("Error loading local JSON files:", error);
+            return [];
+        }
+    };
+
     const deleteRecording = async (uri: string) => {
         try {
             await FileSystem.deleteAsync(uri);
@@ -147,7 +213,7 @@ export function PlayerProvider({ children }: any) {
     };
 
     return (
-        <PlayerContext.Provider value={{ recordings, loadRecordings, sendRecording, jsonContent ,isLoadingJson/*deleteRecording,*/ }}>
+        <PlayerContext.Provider value={{loadAllData, recordings, loadRecordings, sendRecording, jsonContent ,isLoadingJson/*deleteRecording,*/ }}>
             {children}
         </PlayerContext.Provider>
     );

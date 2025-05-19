@@ -35,7 +35,10 @@ Si le devices n'est pas detecter :
 - adb devices
 Verifier que je suis dans le bon mod developement build (Press s)
 
-
+--------------------------------------------------------------
+POUR REBUILD MON PROJET :
+eas build --platform android
+-----------------------------------------------------------------
 
 Pour les requetes utiliser AXIOS(plus de securiter) ou fetch (plus simple)
 
@@ -342,3 +345,17 @@ export default function Resume({ item, index, scrollRef }: ResumeProps) {
 commande pour la limte de mon application ou de mes fichier (pas sur)
 fs.inotify.max_user_watches=524288
 sudo sysctl -p
+
+modife de build.gradle dans android et dans app
+
+lien vers mon build avce l'extension .aab
+il faut le convertir en .apk pour l'installer sur un android ou deployer sur l'appstore
+pour generer un .apk localement utiliser "eas build --profile preview --platform android"
+
+POUR REBUILD MON PROJET :
+eas build --platform android 
+ou
+eas build --profile development --platform android (pour utiliser les libraries react native)
+adress de mon dernier build : 
+https://expo.dev/accounts/fayer/projects/speech_to_text/builds/1041c349-c53c-49af-b5a7-6089f40210f0
+✔ Using Keystore from configuration: Build Credentials tq6BLlVVPO (default)

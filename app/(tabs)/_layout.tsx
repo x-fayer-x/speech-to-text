@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { RootStackParamList } from '../types/navigation'; // Import du type RootStackParamList
+import { RootStackParamList } from '../types/_navigation'; // Import du type RootStackParamList
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import useThemeColor from '../hooks/useThemeColor';
@@ -45,14 +45,6 @@ function TabLayout() {
         }),
       }}
     >
-      {/* <Tab.Screen
-        name="Home"
-        component={login}
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="home" color={color} />,
-        }}
-      /> */}
       <Tab.Screen
         name="Record"
         component={index}

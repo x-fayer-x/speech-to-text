@@ -41,7 +41,7 @@ export default function Record() {
                     </View>
                 </View>
                <View style={styles.container}>
-                <CheckFiles style={styles.checkFilesContainer} />
+                {/* <CheckFiles style={styles.checkFilesContainer} /> */}
                 </View>
             </PlayerProvider>
         );
