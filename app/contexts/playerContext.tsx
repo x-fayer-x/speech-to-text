@@ -84,6 +84,7 @@ export function PlayerProvider({ children }: any) {
         //   setRecordings(localRecordings);
       
           // Récupérer les données depuis le backend
+          //port 48 au lieu de 50 pour les test
           const response = await fetch('http://vps-692a3a83.vps.ovh.net:5049/api/recordings', {
             method: 'GET',
             headers: {

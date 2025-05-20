@@ -20,29 +20,32 @@ const RegistrationPage = () => {
   };
 
   // Fonction pour gérer l'enregistrement
+  //suppr de confrim password pour les tests
   const handleRegistration = async () => {
-    if (!username || !Email || !password || !ConfirmPassword) {
+    if (!username || !Email || !password){
       console.log('Error', 'Please fill in all fields.');
       Alert.alert('Please fill in all fields.');
       return;
     }
 
-    if (password !== ConfirmPassword) {
-      console.log('Error', 'Passwords do not match.');
-      return;
-    }
+    //Pour les test register
+    // if (password !== ConfirmPassword) {
+    //   console.log('Error', 'Passwords do not match.');
+    //   return;
+    // }
 
+    //port 48 au lieu de 50
     try {
-      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/register', {
+      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5048/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Username: username,
-          Password: password,
-          Email: Email,
-          Confirmation: ConfirmPassword,
+          username: username,
+          password: password,
+          email: Email,
+          // Confirmation: ConfirmPassword,
         }),
       });
 
@@ -95,13 +98,6 @@ const RegistrationPage = () => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={ConfirmPassword}
-        onChangeText={setConfirmPassword}
         secureTextEntry
       />
       <Button title="Create your new account" onPress={handleRegistration} />

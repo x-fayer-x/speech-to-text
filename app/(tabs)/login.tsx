@@ -7,7 +7,7 @@ import { getToken,saveToken } from '../utils/token_save_get_delete';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setEmail] = useState('');
   const [password, setPassword] = useState('');
   // const navigation = useNavigation();
 
@@ -24,8 +24,8 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     // Handle login logic here
-    if (email && password) {
-      console.log('Login check', `yur Emailconnection, ${email}!`);
+    if (username && password) {
+      console.log('Login check', `yur username connection, ${username}!`);
     } else {
       console.log('Error', 'Please enter both ID and password.');
       Alert.alert('Please fill in all fields.');
@@ -35,13 +35,13 @@ const LoginPage = () => {
     // navigation.navigate('Main');
     try {
       // Envoyer les données au backend
-      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/login', {
+      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5048/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Email: email,
+          username: username,
           password: password,
         }),
       });
@@ -75,7 +75,7 @@ const LoginPage = () => {
       }
     
       if (response.ok) {
-        Alert.alert('Login Successful', `Welcome back, ${email}`);
+        Alert.alert('Login Successful', `Welcome back, ${username}`);
         navigation.navigate('Main'); // Naviguer vers TabLayout
       } else {
         Alert.alert('Login Failed', data.message || 'Invalid credentials');
@@ -91,7 +91,7 @@ const LoginPage = () => {
       <TextInput
         style={styles.input}
         placeholder="Enter ID"
-        value={email}
+        value={username}
         onChangeText={setEmail}
       />
       <TextInput
