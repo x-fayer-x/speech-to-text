@@ -5,7 +5,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 
-import usePlayer from "@/app/contexts/playerContext";
+import {usePlayer} from "../../contexts/playerContext";
 import { useThemeColor } from "@/app/hooks/useThemeColor";
 
 export default function Recorder() {
@@ -18,7 +18,7 @@ export default function Recorder() {
     // const [savedRecordings, setSavedRecordings] = useState<string[]>([]);
 
     const [isRecording, setIsRecording] = useState(false);
-    const { sendRecording, loadRecordings } = usePlayer();
+    const { sendRecording, isLoadingJson } = usePlayer();
 
     // useEffect(() => {
     //     const fetchRecordings = async () => {
@@ -68,14 +68,8 @@ export default function Recorder() {
 
             // Convert the recording to base64
             if (newUri && sendRecording) {
-                sendRecording(newUri);
-
-                // Supprimer le fichier local après l'envoi
-                // await FileSystem.deleteAsync(newUri);
-                // console.log("Local recording deleted after upload");
+                await handleRecordingComplete(newUri);
             }
-
-            loadRecordings();
 
             setRecording(null);
             setIsRecording(false);
@@ -107,6 +101,19 @@ export default function Recorder() {
         }
         setIsRecording(!isRecording);
     }
+
+    const handleRecordingComplete = async (uri: string) => {
+        try {
+            if (!sendRecording) {
+                throw new Error("sendRecording n'est pas disponible");
+            }
+            await sendRecording(uri);
+            // L'enregistrement est envoyé et traité
+            console.log("Enregistrement envoyé avec succès");
+        } catch (error) {
+            console.error("Erreur lors de l'envoi de l'enregistrement:", error);
+        }
+    };
 
     return (
         <View>

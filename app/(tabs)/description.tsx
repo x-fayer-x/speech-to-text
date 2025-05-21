@@ -1,150 +1,201 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, SafeAreaView, FlatList, Text, StyleSheet,Button } from 'react-native';
+import { View, SafeAreaView, FlatList, Text, StyleSheet, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import * as FileSystem from 'expo-file-system';
-import { useThemeColor } from "../hooks/useThemeColor";
-import Resume from "../components/description/resume";
-import usePlayer from '../contexts/playerContext';
-import loadRecordings from '../contexts/playerContext'; 
-
+import { usePlayer } from '../contexts/playerContext';
+import { Audio } from 'expo-av';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { getToken } from '../utils/token_save_get_delete';
 
 export default function Description() {
-  const { jsonContent,recordings, loadRecordings } = usePlayer(); // Récupérer recordings et loadRecordings depuis le contexte
-  // const { jsonContent } = usePlayer(); 
-  const [jsonContents, setJsonContents] = useState<any[]>([]);
-  const scrollRef = useRef<FlatList>(null);
+    const { loadAllRecordings, jsonContent, isLoadingJson } = usePlayer();
+    const scrollRef = useRef<FlatList>(null);
+    const [sound, setSound] = useState<Audio.Sound | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const readJsonFiles = async () => {
-      try {
-        if (!FileSystem.documentDirectory) {
-          console.error("FileSystem.documentDirectory is null");
-          return;
-        }
-  
-        // Lire tous les fichiers dans le répertoire
-        const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-  
-        // Filtrer uniquement les fichiers JSON
-        const jsonFiles = files.filter(file => file.endsWith('.json'));
-  
-        // Lire et parser le contenu des fichiers JSON
-        const parsedJsonContents = await Promise.all(
-          jsonFiles.map(async (file) => {
-            const fileUri = `${FileSystem.documentDirectory}${file}`;
-            const json = await FileSystem.readAsStringAsync(fileUri, {
-              encoding: FileSystem.EncodingType.UTF8,
+    useEffect(() => {
+        alert('1. Description component mounted');
+        loadAllRecordings();
+        return () => {
+            if (sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        alert('2. jsonContent updated: ' + JSON.stringify(jsonContent));
+    }, [jsonContent]);
+
+    const playAudio = async (audioData: string) => {
+        try {
+            if (sound) {
+                await sound.unloadAsync();
+            }
+
+            const { sound: newSound } = await Audio.Sound.createAsync(
+                { uri: `data:audio/mp4;base64,${audioData}` },
+                { shouldPlay: true }
+            );
+
+            setSound(newSound);
+            setIsPlaying(true);
+
+            newSound.setOnPlaybackStatusUpdate((status) => {
+                if (status.isLoaded && status.didJustFinish) {
+                    setIsPlaying(false);
+                }
             });
-            return JSON.parse(json);
-          })
-        );
-  
-        // Mettre à jour l'état avec les nouvelles données
-        setJsonContents(prevJsonContents => {
-          const updatedContent = [...prevJsonContents, ...parsedJsonContents];
-          console.log("DESCIPTION l44 Updated jsonContent:", updatedContent);
-          return updatedContent;
-        });
-      } catch (error) {
-        console.error('Error reading JSON files:', error);
-      }
+        } catch (error) {
+            console.error('Erreur lors de la lecture audio:', error);
+        }
     };
-  
-    readJsonFiles();
-  }, [recordings]);
 
-  useEffect(() => {
-    loadRecordings();
-  }, []);
+    const stopAudio = async () => {
+        if (sound) {
+            await sound.stopAsync();
+            setIsPlaying(false);
+        }
+    };
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
 
-  const deleteAllFiles = async () => {
-    try {
-      if (!FileSystem.documentDirectory) {
-        console.error("FileSystem.documentDirectory is null");
-        return;
-      }
+    return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView style={styles.container}>
+                {isLoadingJson ? (
+                    <ActivityIndicator size="large" color="#0000ff" />
+                ) : jsonContent && jsonContent.length > 0 ? (
+                    <FlatList
+                        ref={scrollRef}
+                        data={jsonContent}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                            <View style={styles.recordingItem}>
+                                <Text style={styles.date}>
+                                    Enregistré le {formatDate(item.date)}
+                                </Text>
+                                
+                                <View style={styles.audioControls}>
+                                    <Pressable
+                                        onPress={() => isPlaying ? stopAudio() : playAudio(item.audioInputData)}
+                                        style={styles.audioButton}
+                                    >
+                                        <MaterialIcons 
+                                            name={isPlaying ? "stop" : "play-arrow"} 
+                                            size={24} 
+                                            color="purple" 
+                                        />
+                                        <Text style={styles.audioButtonText}>
+                                            {isPlaying ? "Arrêter" : "Écouter l'enregistrement"}
+                                        </Text>
+                                    </Pressable>
 
-      const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+                                    <Pressable
+                                        onPress={() => isPlaying ? stopAudio() : playAudio(item.audioOutputData)}
+                                        style={styles.audioButton}
+                                    >
+                                        <MaterialIcons 
+                                            name={isPlaying ? "stop" : "play-arrow"} 
+                                            size={24} 
+                                            color="purple" 
+                                        />
+                                        <Text style={styles.audioButtonText}>
+                                            {isPlaying ? "Arrêter" : "Écouter le résumé"}
+                                        </Text>
+                                    </Pressable>
+                                </View>
 
-      await Promise.all(files.map(async (file) => {
-        const fileUri = `${FileSystem.documentDirectory}${file}`;
-        await FileSystem.deleteAsync(fileUri);
-        console.log('Deleted file:', fileUri);
-      }));
-
-      setJsonContents([]);
-
-      loadRecordings();
-      console.log('description.tsx l84 All files deleted');
-    } catch (error) {
-      console.error('Error deleting files:', error);
-    }
-  };
-
-  // Combiner recordings et jsonContents
-  // const combinedData = [
-  //   ...recordings.map((file) => ({
-  //     audioUri: `${FileSystem.documentDirectory}recordings/${file}`,
-  //     transcription: "",
-  //     summary: "",
-  //   })),
-  //   ...jsonContents,
-  // ];
-
-  return (
-    <GestureHandlerRootView>
-      <View style={{ backgroundColor: useThemeColor({}, "background"), flex: 1 }}>
-        <SafeAreaView
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingVertical: 30,
-          }}
-        >
-          <Button title="Delete All Files" onPress={deleteAllFiles} />
-            <FlatList
-              ref={scrollRef}
-              data={jsonContent} // Utilisation de jsonContent
-              keyExtractor={(item, index) => index.toString()} // Utilisation de l'index comme clé
-              renderItem={({ item, index }) => {
-                  console.log("Data passed to Resume:", item);
-                  return <Resume item={item} index={index} scrollRef={scrollRef} />;
-              }}
-          />
-        </SafeAreaView>
-      </View>
-    </GestureHandlerRootView>
-  );
+                                <Text style={styles.title}>Transcription :</Text>
+                                <Text style={styles.transcription}>{item.transcription}</Text>
+                                <Text style={styles.title}>Résumé :</Text>
+                                <Text style={styles.summary}>{item.summary}</Text>
+                            </View>
+                        )}
+                    />
+                ) : (
+                    <View style={styles.noDataContainer}>
+                        <Text style={styles.noDataText}>Aucun enregistrement disponible</Text>
+                    </View>
+                )}
+            </SafeAreaView>
+        </GestureHandlerRootView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 16,
-    color: 'white', // Couleur par défaut, sera remplacée par textColor
-  },
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#fff',
+    },
+    recordingItem: {
+        marginBottom: 16,
+        padding: 16,
+        backgroundColor: '#f5f5f5',
+        borderRadius: 8,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    date: {
+        fontSize: 12,
+        color: '#666',
+        marginBottom: 8,
+    },
+    audioControls: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 16,
+    },
+    audioButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'purple',
+    },
+    audioButtonText: {
+        marginLeft: 8,
+        color: 'purple',
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 8,
+        marginBottom: 4,
+        color: '#333',
+    },
+    transcription: {
+        fontSize: 16,
+        marginBottom: 8,
+        color: '#444',
+        lineHeight: 24,
+    },
+    summary: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 8,
+        lineHeight: 20,
+    },
+    noDataContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noDataText: {
+        fontSize: 16,
+        color: '#666',
+    },
 });
-
-
-//ANCIENNE FLATLIST POUR AFFICHER LES TRANDCRIPTION/RESUMER
-{/* <Button title="Delete All Files" onPress={deleteAllFiles} /> 
-          <FlatList
-            ref={scrollRef}
-            data={recordings} // quand je modifie avce jsonCOntent ca me modifie le contenus de mon print resume pourquoi 
-            // (mais sa sauvegarde mes contenus de resume?
-            keyExtractor={(item) => item}
-            renderItem={({ item, index }) => (
-              <Resume item={item} index={index} scrollRef={scrollRef} /> // Utilisez le composant Resume
-            )}
-          />
-        </SafeAreaView>
-      </View>
-    </GestureHandlerRootView>
-  );
-} */}
