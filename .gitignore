@@ -9,6 +9,9 @@ dist/
 web-build/
 expo-env.d.ts
 
+# personal
+note_perso.md
+
 # Native
 *.orig.*
 *.jks
