@@ -33,7 +33,7 @@ const RegistrationPage = () => {
     }
 
     try {
-      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/register', {
+      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5048/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

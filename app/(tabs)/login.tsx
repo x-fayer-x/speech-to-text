@@ -35,7 +35,7 @@ const LoginPage = () => {
     // navigation.navigate('Main');
     try {
       // Envoyer les données au backend
-      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5050/login', {
+      const response = await fetch('http://vps-692a3a83.vps.ovh.net:5048/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

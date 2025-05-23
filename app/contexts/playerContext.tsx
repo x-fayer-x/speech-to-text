@@ -84,7 +84,7 @@ export function PlayerProvider({ children }: any) {
         //   setRecordings(localRecordings);
       
           // Récupérer les données depuis le backend
-          const response = await fetch('http://vps-692a3a83.vps.ovh.net:5049/api/recordings', {
+          const response = await fetch('http://vps-692a3a83.vps.ovh.net:5048/api/recordings', {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
