@@ -74,7 +74,6 @@ npx expo start
 projet par partie : 
 Collecting workspace information
 
-Je n'ai pas modifié le code car vous n'avez pas demandé de modifications spécifiques. Voici un résumé des fichiers et de leurs responsabilités dans votre projet :
 
 ### Fichiers et leurs responsabilités
 
@@ -152,7 +151,6 @@ Checkfile.tsx
 - **Affichage**: Affiche une liste des fichiers d'enregistrement.
 - **Appelé par**: record.tsx
 
-Si vous avez besoin de modifications spécifiques ou d'ajouter des fonctionnalités, veuillez me le faire savoir !
 
  <!-- -------------------------------------------------------------------------------------------------------------- -->
  <!-- -------------------------------------------------------------------------------------------------------------- -->
