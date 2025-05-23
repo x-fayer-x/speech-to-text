@@ -1,132 +1,65 @@
-# Speech to Text – Documentation Utilisateur
+# Speech to Text – Guide Utilisateur
 
 ## Introduction
 
-Bienvenue sur l’application **Speech to Text**. Cette application permet d’enregistrer de l’audio, de le transcrire en texte, de gérer vos enregistrements et de naviguer facilement entre différentes fonctionnalités.
+Bienvenue sur l’application **Speech to Text**. Cette application vous permet d’enregistrer de l’audio, de le transcrire en texte, et de gérer vos enregistrements facilement.
 
 ---
 
-## Installation
+## Installation rapide
 
 ### Prérequis
 
-- Node.js (version recommandée : >= 18)
-- npm ou yarn
-- Expo CLI (`npm install -g expo-cli`)
-- Un smartphone Android/iOS ou un émulateur
+- Smartphone Android/iOS ou émulateur
+- Application [Expo Go](https://expo.dev/expo-go) installée sur votre téléphone
 
-### Étapes d’installation
+### Étapes
 
-1. **Cloner le dépôt**
-   ```bash
-   git clone <url_du_repo>
-   cd speech_to_text
-   ```
-
-2. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
-
-3. **Lancer l’application**
-   ```bash
-   npx expo start
-   ```
-   - Scanner le QR code avec l’application **Expo Go** sur votre téléphone.
+1. Demandez le lien d’accès à l’application à l’équipe ou scannez le QR code fourni.
+2. Ouvrez **Expo Go** et scannez le QR code pour lancer l’application.
 
 ---
 
 ## Fonctionnalités principales
 
-- **Enregistrement audio** : Enregistrez votre voix en un clic.
-- **Transcription** : Convertissez automatiquement vos enregistrements en texte.
-- **Gestion des enregistrements** : Visualisez, écoutez et supprimez vos enregistrements.
-- **Authentification** : Inscription et connexion sécurisées.
-- **Sélection de la langue** : Choisissez la langue de transcription.
+- **Enregistrement audio** en un clic
+- **Transcription automatique** de vos enregistrements
+- **Gestion** : visualisez, écoutez, supprimez vos enregistrements
+- **Authentification** : inscription et connexion sécurisées
+- **Choix de la langue** pour la transcription
 
 ---
 
-## Utilisation de l’application
+## Utilisation
 
-### 1. S’inscrire
-
-- Rendez-vous sur l’écran **Register**.
-- Remplissez les champs requis (username, email, mot de passe).
-- Cliquez sur **Create your new account**.
-
-### 2. Se connecter
-
-- Accédez à l’écran **Login**.
-- Entrez vos identifiants.
-- Cliquez sur **Login**.
-
-### 3. Enregistrer et transcrire
-
-- Depuis la page d’accueil, cliquez sur le bouton d’enregistrement.
-- Arrêtez l’enregistrement pour lancer la transcription automatique.
-- Retrouvez vos enregistrements dans la liste.
-
-### 4. Gérer vos enregistrements
-
-- Page déscription voir la transcription d'un audio.
-- Utilisez la page settings pour écouter ou supprimer les enregistrements.
-
----
-
-## Dépannage
-
-- **Problème de build Android** : Vérifiez la variable d’environnement `ANDROID_HOME`.
-- **Cache corrompu** :  
-  ```bash
-  rm -rf node_modules/.cache
-  rm -rf .expo
-  npm install
-  npx expo start
-  ```
-- **Appareil non détecté** :
-  ```bash
-  adb kill-server
-  adb start-server
-  adb devices
-  ```
-
----
-
-## Commandes utiles
-
-- `npx expo start` : Démarre le serveur de développement.
-- `eas build --platform android` : Génère un build Android.
-- `npm run android` : Lance l’application sur un appareil Android.
-- `npm run ios` : Lance l’application sur un simulateur iOS.
+1. **Inscription** : créez un compte via l’écran Register.
+2. **Connexion** : connectez-vous avec vos identifiants.
+3. **Enregistrement** : cliquez sur le bouton d’enregistrement sur la page d’accueil.
+4. **Transcription** : arrêtez l’enregistrement pour voir la transcription.
+5. **Gestion** : accédez à la page settings pour écouter ou supprimer vos enregistrements.
 
 ---
 
 ## FAQ
 
-**Q : Comment changer la langue de transcription ?**  
-R : Utilisez le menu déroulant sur la page d’accueil.
+**Comment changer la langue de transcription ?**  
+Utilisez le menu déroulant sur la page d’accueil.
 
-**Q : Où sont stockés mes enregistrements ?**  
-R : Les fichiers sont stockés localement sur votre appareil.
+**Où sont stockés mes enregistrements ?**  
+Sur votre appareil, en local.
 
-**Q : Comment supprimer un enregistrement ?**  
-R : Cliquez sur l’icône de suppression à côté de l’enregistrement.
+**Comment supprimer un enregistrement ?**  
+Utilisez la page settings.
 
 ---
 
-## Liens utiles
+## Support
 
-- [Documentation Expo](https://docs.expo.dev/)
-- [React Native](https://reactnative.dev/)
-- [Support du projet](mailto:contact@votreprojet.com)
+Pour toute question ou suggestion, contactez l’équipe via le dépôt GitHub ou par mail.
 
 ---
 
 ## Auteurs
 
-- Fayer (Zone01)
-- Collaborateurs : Lucas, Enzo, etc.
-
----
-
-> Pour toute question ou suggestion, ouvrez une issue sur le dépôt GitHub.
+- Lucas (Zone01)
+- Collaborateurs : Come, Enzo, Gaetan etc.
