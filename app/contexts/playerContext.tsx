@@ -92,7 +92,7 @@ export function PlayerProvider({ children }: any) {
           });
       
           if (!response.ok) {
-            throw new Error('Failed to fetch recordings from server');
+            console.log('Failed to fetch recordings from server');
           }
 
           const serverData: RecordingData[] = await response.json();
@@ -102,25 +102,34 @@ export function PlayerProvider({ children }: any) {
           setJsonContent(serverData);
           return serverData;
         } catch (error) {
-          console.error('Error loading recordings:', error);
+          console.log('Error loading recordings:', error);
             return [];
         }
       };
 
-      const saveJsonToFile = async (json: any) => {
-        const directory = FileSystem.documentDirectory;
-        if (!directory) {
-            console.error("FileSystem.documentDirectory is null");
+    const saveJsonToFile = async (json: any) => {
+        // Vérifie que c'est bien un résumé audio
+        if (
+            typeof json.audioUri === "string" &&
+            typeof json.transcription === "string" &&
+            typeof json.summary === "string"
+        ) {
+            const directory = FileSystem.documentDirectory;
+            if (!directory) {
+                console.error("FileSystem.documentDirectory is null");
+                return null;
+            }
+            const fileUri = `${directory}response.json-${Date.now()}.json`;
+            console.log("Saving JSON to", fileUri);
+            await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(json), {
+                encoding: FileSystem.EncodingType.UTF8,
+            });
+            console.log("JSON saved to", fileUri);
+            return fileUri;
+        } else {
+            console.warn("Tentative de sauvegarde d'un objet non résumé audio, opération ignorée.");
             return null;
         }
-    
-        const fileUri = `${directory}response.json-${Date.now()}.json`;
-        console.log("Saving JSON to", fileUri);
-        await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(json), {
-            encoding: FileSystem.EncodingType.UTF8,
-        });
-        console.log("JSON saved to", fileUri);
-        return fileUri;
     };
 
     const sendRecording = async (uri: string) => {

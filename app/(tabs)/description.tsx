@@ -58,28 +58,27 @@ export default function Description() {
   }, []);
 
 
-  const deleteAllFiles = async () => {
-    try {
-      if (!FileSystem.documentDirectory) {
-        console.error("FileSystem.documentDirectory is null");
-        return;
+    const deleteAllFiles = async () => {
+      try {
+          const directory = FileSystem.documentDirectory;
+          if (!directory) {
+              console.error("FileSystem.documentDirectory is null");
+              return;
+          }
+          const files = await FileSystem.readDirectoryAsync(directory);
+          const jsonFiles = files.filter(file => file.endsWith('.json'));
+          await Promise.all(jsonFiles.map(async (file) => {
+              const fileUri = `${directory}${file}`;
+              await FileSystem.deleteAsync(fileUri, { idempotent: true });
+              console.log('Deleted JSON file:', fileUri);
+          }));
+          // Optionnel : vider le state local si besoin
+          setJsonContents([]);
+          jsonContent.length = 0; // Vider le tableau jsonContent du contexte
+          console.log('All JSON files deleted');
+      } catch (error) {
+          console.error('Error deleting JSON files:', error);
       }
-
-      const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-
-      await Promise.all(files.map(async (file) => {
-        const fileUri = `${FileSystem.documentDirectory}${file}`;
-        await FileSystem.deleteAsync(fileUri);
-        console.log('Deleted file:', fileUri);
-      }));
-
-      setJsonContents([]);
-
-      loadRecordings();
-      console.log('description.tsx l84 All files deleted');
-    } catch (error) {
-      console.error('Error deleting files:', error);
-    }
   };
 
   // Combiner recordings et jsonContents
