@@ -13,17 +13,18 @@ export default function Description() {
     const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
-        alert('1. Description component mounted');
         loadAllRecordings();
-        return () => {
-            if (sound) {
-                sound.unloadAsync();
-            }
-        };
     }, []);
 
+    const handleRefresh = async () => {
+        alert('Rafraîchissement des données...');
+        await loadAllRecordings();
+    };
+
     useEffect(() => {
-        alert('2. jsonContent updated: ' + JSON.stringify(jsonContent));
+        if (jsonContent && jsonContent.length > 0) {
+            alert('Données reçues : ' + jsonContent.length + ' enregistrements');
+        }
     }, [jsonContent]);
 
     const playAudio = async (audioData: string) => {
@@ -46,7 +47,7 @@ export default function Description() {
                 }
             });
         } catch (error) {
-            console.error('Erreur lors de la lecture audio:', error);
+            alert('Erreur lecture audio: ' + error);
         }
     };
 
@@ -70,6 +71,20 @@ export default function Description() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>Mes enregistrements</Text>
+                    <Pressable
+                        onPress={handleRefresh}
+                        style={styles.refreshButton}
+                    >
+                        <MaterialIcons 
+                            name="refresh" 
+                            size={24} 
+                            color="purple" 
+                        />
+                    </Pressable>
+                </View>
+
                 {isLoadingJson ? (
                     <ActivityIndicator size="large" color="#0000ff" />
                 ) : jsonContent && jsonContent.length > 0 ? (
@@ -77,48 +92,51 @@ export default function Description() {
                         ref={scrollRef}
                         data={jsonContent}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                            <View style={styles.recordingItem}>
-                                <Text style={styles.date}>
-                                    Enregistré le {formatDate(item.date)}
-                                </Text>
-                                
-                                <View style={styles.audioControls}>
-                                    <Pressable
-                                        onPress={() => isPlaying ? stopAudio() : playAudio(item.audioInputData)}
-                                        style={styles.audioButton}
-                                    >
-                                        <MaterialIcons 
-                                            name={isPlaying ? "stop" : "play-arrow"} 
-                                            size={24} 
-                                            color="purple" 
-                                        />
-                                        <Text style={styles.audioButtonText}>
-                                            {isPlaying ? "Arrêter" : "Écouter l'enregistrement"}
-                                        </Text>
-                                    </Pressable>
+                        renderItem={({ item }) => {
+                            alert('Rendu de l\'item : ' + JSON.stringify(item));
+                            return (
+                                <View style={styles.recordingItem}>
+                                    <Text style={styles.date}>
+                                        Enregistré le {formatDate(item.date)}
+                                    </Text>
+                                    
+                                    <View style={styles.audioControls}>
+                                        <Pressable
+                                            onPress={() => isPlaying ? stopAudio() : playAudio(item.audioInputData)}
+                                            style={styles.audioButton}
+                                        >
+                                            <MaterialIcons 
+                                                name={isPlaying ? "stop" : "play-arrow"} 
+                                                size={24} 
+                                                color="purple" 
+                                            />
+                                            <Text style={styles.audioButtonText}>
+                                                {isPlaying ? "Arrêter" : "Écouter l'enregistrement"}
+                                            </Text>
+                                        </Pressable>
 
-                                    <Pressable
-                                        onPress={() => isPlaying ? stopAudio() : playAudio(item.audioOutputData)}
-                                        style={styles.audioButton}
-                                    >
-                                        <MaterialIcons 
-                                            name={isPlaying ? "stop" : "play-arrow"} 
-                                            size={24} 
-                                            color="purple" 
-                                        />
-                                        <Text style={styles.audioButtonText}>
-                                            {isPlaying ? "Arrêter" : "Écouter le résumé"}
-                                        </Text>
-                                    </Pressable>
+                                        <Pressable
+                                            onPress={() => isPlaying ? stopAudio() : playAudio(item.audioOutputData)}
+                                            style={styles.audioButton}
+                                        >
+                                            <MaterialIcons 
+                                                name={isPlaying ? "stop" : "play-arrow"} 
+                                                size={24} 
+                                                color="purple" 
+                                            />
+                                            <Text style={styles.audioButtonText}>
+                                                {isPlaying ? "Arrêter" : "Écouter le résumé"}
+                                            </Text>
+                                        </Pressable>
+                                    </View>
+
+                                    <Text style={styles.title}>Transcription :</Text>
+                                    <Text style={styles.transcription}>{item.transcription}</Text>
+                                    <Text style={styles.title}>Résumé :</Text>
+                                    <Text style={styles.summary}>{item.summary}</Text>
                                 </View>
-
-                                <Text style={styles.title}>Transcription :</Text>
-                                <Text style={styles.transcription}>{item.transcription}</Text>
-                                <Text style={styles.title}>Résumé :</Text>
-                                <Text style={styles.summary}>{item.summary}</Text>
-                            </View>
-                        )}
+                            );
+                        }}
                     />
                 ) : (
                     <View style={styles.noDataContainer}>
@@ -135,6 +153,22 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#fff',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    refreshButton: {
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: '#f5f5f5',
     },
     recordingItem: {
         marginBottom: 16,

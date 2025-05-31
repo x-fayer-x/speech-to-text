@@ -86,7 +86,7 @@ export function PlayerProvider({ children }: any) {
             setJsonContent(data);
             setRecordings(data.map((item: RecordingData) => item.audioInputData));
             Alert.alert('Debug', '9. Enregistrements chargés avec succès');
-            // Affichage des enregistrements dans la console
+            //Affichage des enregistrements dans la console
             console.log('Enregistrements:', data);
             console.log('Enregistrements audio:', data.map((item: RecordingData) => item.audioInputData));
             console.log('Enregistrements audio:', recordings);
